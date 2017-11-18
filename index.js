@@ -1,49 +1,26 @@
 
-const puppeteer = require('puppeteer')
-const ora = require('ora')
-const serveStatic = require('serve-static')
-const finalhandler = require('finalhandler')
-const http = require('http')
-const getPort = require('get-port')
+const api = require('./src/api_commonjs')
 
-const run = (fn) => fn()
-
-const createServer = (port) => new Promise((resolve) => {
-  const serve = serveStatic('app')
-  const server = http.createServer((req, res) =>
-    serve(req, res, finalhandler))
-  server.listen(port)
-  resolve(server)
-})
-
-const debug = process.argv[0] == '-d' || process.env.DEBUG
-
-run(async () => {
-  const spinner = ora({type: 'circleHalves', color: 'cyan'}).start()
-  const port = await getPort()
-  spinner.text = 'preparing...'
-  const server = await createServer(port)
-  var browser
-  try {
-    spinner.text = 'spawning browser'
-    browser = await puppeteer.launch({headless: !debug})
-    spinner.text = 'creating page'
-    const page = await browser.newPage()
-    spinner.text = 'adding script tag'
-    await page.goto(`http://localhost:${port}/tileApp.html`)
-    spinner.text = 'taking screenshot'
-    const size = await page.evaluate(() => ({width: document.body.childNodes[0].width, height: document.body.childNodes[0].height}))
-    await page.screenshot({path: 'example.png', clip: {x: 0, y: 0, width: size.width, height: size.height}})
-    spinner.succeed()
-    if (!debug) {
-      await server.close()
-      await browser.close()
-    }
-  } catch (err) {
-    spinner.fail(err.message)
-    if (!debug) {
-      await server.close()
-      await browser.close()
-    }
-  }
-})
+/**
+ * Composing tiles is done in an canvas element. For this I use
+ * a headless chrome (puppeteer). Sadly node-canvas has a dependency
+ * on some system libraries which make it less portable.
+ *
+ * Steps to create the final image
+ *
+ *  1. Spawn static file server (otherwise we won't have module support)
+ *  2. Launch Browser and load app
+ *  3. [TODO] Send input
+ *  4. Take screenshot.
+ */
+// api.generateImage([[0, 0], [1, 1]])
+api.generateImageFromAscii(
+/*`9 21 21 21 21 21 10
+8 27 27 1 2 27 7
+8 27 27 0 0 27 7
+22 20 20 20 20 20 23`*/
+`27 1 2
+27 0 30
+27 0 24 29 2
+27 14 13 13 15`
+)

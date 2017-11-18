@@ -13,6 +13,7 @@
   "author": "Maximilian Klein",
   "license": "MIT",
   "dependencies": {
+    "@std/esm": "^0.16.0",
     "express": "^4.16.2",
     "finalhandler": "^1.1.0",
     "get-port": "^3.2.0",
