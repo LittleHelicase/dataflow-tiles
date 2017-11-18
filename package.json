@@ -1,0 +1,23 @@
+{
+  "name": "dataflow-tiles",
+  "version": "1.0.0",
+  "description": "Create data-flow diagrams from image tiles.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "data-flow",
+    "generator"
+  ],
+  "author": "Maximilian Klein",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "finalhandler": "^1.1.0",
+    "get-port": "^3.2.0",
+    "ora": "^1.3.0",
+    "puppeteer": "^0.13.0",
+    "serve-static": "^1.13.1"
+  }
+}
