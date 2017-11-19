@@ -2,7 +2,7 @@ import {loadTileMap, drawTile} from './map.mjs'
 
 document.body.innerHTML = "<canvas id='canv'></canvas>"
 
-const tileSize = 133.333
+const tileSize = 80
 var ctx, tileMap, canv
 loadTileMap('resources/map.png', tileSize).then((tm) => {
   tileMap = tm
@@ -16,12 +16,16 @@ document.drawInput = (input) => {
       maxWidth = (maxWidth > input[i].length) ? maxWidth : input[i].length
     }
   }
+
   canv.width = maxWidth * tileSize
   canv.height = input.length * tileSize
   ctx = canv.getContext('2d')
   for (var i = 0; i < input.length; i++) {
     for (var j = 0; j < input[i].length; j++) {
-      drawTile(input[i][j], {x: j, y: i})(ctx, tileMap)
+      const tiles = input[i][j].split('+')
+      for (const tile in tiles) {
+        drawTile(tiles[tile], {x: j, y: i})(ctx, tileMap)
+      }
     }
   }
 }
