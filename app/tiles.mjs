@@ -1,4 +1,5 @@
-import {loadTileMap, drawTile} from './map.mjs'
+import {loadTileMap} from './map.mjs'
+import {draw, measure} from './drawing.mjs'
 
 document.body.innerHTML = "<canvas id='canv'></canvas>"
 
@@ -9,23 +10,12 @@ loadTileMap('resources/map.png', tileSize).then((tm) => {
   canv = document.getElementById('canv')
 })
 
-document.drawInput = (input) => {
-  var maxWidth = 0
-  for (let i = 0; i < input.length; i++) {
-    for (let j = 0; j < input[i].length; j++) {
-      maxWidth = (maxWidth > input[i].length) ? maxWidth : input[i].length
-    }
-  }
+document.drawInput = (input, library) => {
+  library[" "] = input
+  const size = measure(": ", {x: 0, y: 0})(ctx, tileMap, library)
 
-  canv.width = maxWidth * tileSize
-  canv.height = input.length * tileSize
+  canv.width = size.width
+  canv.height = size.height
   ctx = canv.getContext('2d')
-  for (var i = 0; i < input.length; i++) {
-    for (var j = 0; j < input[i].length; j++) {
-      const tiles = input[i][j].split('+')
-      for (const tile in tiles) {
-        drawTile(tiles[tile], {x: j, y: i})(ctx, tileMap)
-      }
-    }
-  }
+  draw(input, {x: 0, y: 0})(ctx, tileMap, library)
 }

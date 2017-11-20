@@ -44,12 +44,12 @@ const spawnServer = async () => {
  */
 export const puppeteer = {
   processInput: (browser, page) => {
-    return async (input) => {
-      const size = await page.evaluate((input) => {
-        document.drawInput(input)
+    return async (input, library) => {
+      const size = await page.evaluate((input, library) => {
+        document.drawInput(input, library)
         const canvas = document.getElementsByTagName('canvas')[0]
         return {width: canvas.width, height: canvas.height}
-      }, input)
+      }, input, library)
       await page.screenshot({path: 'output.png', clip: {x: 0, y: 0, width: size.width, height: size.height}})
     }
   },

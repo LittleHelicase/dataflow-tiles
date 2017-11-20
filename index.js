@@ -15,6 +15,15 @@ const api = require('./src/api_commonjs')
  */
 // api.generateImage([[0, 0], [1, 1]])
 api.generateImageFromAscii(
-`48+66 49+67
-58+5+7 59+4+6 `
+  `48+{poly-id} 42 42 49
+40 126+66 127+67 41
+58 43+120+5+7 43+121+4+6 59`, {}
+  /*
+':poly-id',
+{
+  "poly-id":
+    `48+{poly-id} 42 42 49
+    40 126+66 127+67 41
+    58 43+120+5+7 43+121+4+6 59`
+}*/
 )

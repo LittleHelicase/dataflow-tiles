@@ -12,16 +12,16 @@ const run = (fn) => fn()
  * @returns {Promise<Buffer>} Returns a promise which resolves to the
  * generated image for the input.
  */
-export function generateImage (input) {
+export function generateImage (input, library) {
   run(async () => {
     const engine = await puppeteer.initialize()
-    const result = await engine.processInput(input)
+    const result = await engine.processInput(input, library || {})
     await engine.cleanUp()
     return result
   })
 }
 
-export function generateImageFromAscii (input) {
+export function generateImageFromAscii (input, library) {
   const inputArray = input.split('\n').map((line) => line.split(' '))
-  generateImage(inputArray)
+  generateImage(inputArray, library || {})
 }
