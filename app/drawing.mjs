@@ -42,17 +42,16 @@ const drawBlock = (str, pt) => {
     for (var i = 0; i < input.length; i++) {
       for (var j = 0; j < input[i].length; j++) {
         const tile = input[i][j]
-        draw(tile, {x: pt.x + j, y: pt.y + i})(ctx, tileMap, library)
+        draw(tile, {x: pt.x + j, y: pt.y + i})(ctx, map, library)
       }
     }
   }
 }
 
 function measureBlock (str, pt) {
+  console.log('measuring block', str)
   return (ctx, map, library) => {
-    console.log('measuring block "' + str + '"')
     const input = library[str.slice(1)]
-    console.log(input)
     var size = {width: 0, height: 0}
     for (var i = 0; i < input.length; i++) {
       for (var j = 0; j < input[i].length; j++) {
@@ -78,9 +77,11 @@ const isTile = (str) => Number(str) + '' === str
 const processItem = (fns) => (str, pt) => {
   for (var i = 0; i < fns.length; i++) {
     if (fns[i][0](str, pt)) {
+      console.log('chose ', i, ' for ', str)
       return fns[i][1](str, pt)
     }
   }
+  throw new Error('No match for string: "' + str + '"')
 }
 
 const drawItem = processItem([
@@ -100,7 +101,10 @@ const combineDraw = (a, b) => {}
 const processString = (fn, combine, init) => (str, pt) => {
   const items = str.split('+')
   return (ctx, map, library) => {
-    return items.reduce((res, item) => combine(res, fn(item, pt)(ctx, map, library)), init)
+    return items.reduce((res, item) => {
+      console.log(fn(item, pt))
+      return combine(res, fn(item, pt)(ctx, map, library))
+    }, init)
   }
 }
 
@@ -108,16 +112,11 @@ const drawString = processString(drawItem, combineDraw, null)
 const measureString = processString(measureItem, combineMeasure, {width: 0, height: 0})
 
 export function draw (input, pt) {
-  return (ctx, tileMap, library) => {
-    for (var i = 0; i < input.length; i++) {
-      for (var j = 0; j < input[i].length; j++) {
-        const tile = input[i][j]
-        drawString(tile, {x: j, y: i})(ctx, tileMap, library)
-      }
-    }
-  }
+  console.log('drawing')
+  return drawString(input, pt)
 }
 
 export function measure (input, pt) {
+  console.log('measuring!!')
   return measureString(input, pt)
 }

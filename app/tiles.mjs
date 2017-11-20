@@ -17,5 +17,5 @@ document.drawInput = (input, library) => {
   canv.width = size.width
   canv.height = size.height
   ctx = canv.getContext('2d')
-  draw(input, {x: 0, y: 0})(ctx, tileMap, library)
+  draw(': ', {x: 0, y: 0})(ctx, tileMap, library)
 }

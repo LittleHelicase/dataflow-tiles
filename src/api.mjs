@@ -21,7 +21,16 @@ export function generateImage (input, library) {
   })
 }
 
+const preprocessString = (str) => {
+  return str.split('\n').map((line) => line.trim().split(' ').filter((cnt) => cnt !== ''))
+}
+
 export function generateImageFromAscii (input, library) {
-  const inputArray = input.split('\n').map((line) => line.split(' '))
+  const inputArray = preprocessString(input)
+  for (var key in library) {
+    if (typeof (library[key]) === 'string') {
+      library[key] = preprocessString(library[key])
+    }
+  }
   generateImage(inputArray, library || {})
 }
