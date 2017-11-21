@@ -2,70 +2,60 @@
 const xCoord = (pt, map) => pt.x * map.tileSize
 const yCoord = (pt, map) => pt.y * map.tileSize
 
-
-const combineMeasure = (sizeA, sizeB) => {
-  return {
-    width: (sizeA.width > sizeB.width) ? sizeA.width : sizeB.width,
-    height: (sizeA.height > sizeB.height) ? sizeA.height : sizeB.height
-  }
-}
-
 function drawTile (n, pt) {
-  return (ctx, map) => {
+  return (map, library) => {
     const x = n % map.width
     const y = Math.floor(n / map.width)
     if (y > map.height) throw Error(`No tile ${n} in map.`)
-    ctx.drawImage(map.tileMap, x * map.tileSize, y * map.tileSize, map.tileSize, map.tileSize,
-      xCoord(pt, map), yCoord(pt, map), map.tileSize, map.tileSize)
+    return [
+      {
+        type: 'blit',
+        tileId: n,
+        fn: (ctx) =>
+          ctx.drawImage(map.tileMap, x * map.tileSize, y * map.tileSize, map.tileSize, map.tileSize,
+            xCoord(pt, map), yCoord(pt, map), map.tileSize, map.tileSize)
+      }
+    ]
   }
 }
 
 function measureTile (n, pt) {
-  return (ctx, map) => ({ width: map.tileSize, height: map.tileSize })
+  return (map) => [{ width: map.tileSize, x: pt.x * map.tileSize, height: map.tileSize, y: pt.y * map.tileSize }]
 }
 
 function drawText (str, pt) {
-  return (ctx, map, library) => {
+  return (map, library) => {
     const text = str.slice(1).slice(0, -1)
-    ctx.font = '20pt serif'
-    ctx.fillText(text, xCoord(pt, map) + map.tileSize*0.25, yCoord(pt, map) + map.tileSize*0.5)
+    return [
+      {
+        type: 'text',
+        fn: (ctx) => {
+          ctx.font = '24px Arial'
+          ctx.fillText(text, xCoord(pt, map) + map.tileSize * 0.25, yCoord(pt, map) + map.tileSize * 0.5)
+        }
+      }
+    ]
   }
 }
 
 function measureText (str, pt) {
-  return (ctx, map) => ({ width: map.tileSize, height: map.tileSize })
+  return (map) => [{ width: map.tileSize, x: pt.x * map.tileSize, height: map.tileSize, y: pt.y * map.tileSize }]
 }
 
-const drawBlock = (str, pt) => {
-  return (ctx, map, library) => {
+const processBlock = (fn) => (str, pt) => {
+  return (map, library) => {
     const input = library[str.slice(1)]
-    for (var i = 0; i < input.length; i++) {
-      for (var j = 0; j < input[i].length; j++) {
-        const tile = input[i][j]
-        draw(tile, {x: pt.x + j, y: pt.y + i})(ctx, map, library)
-      }
-    }
+    return input.reduce((ops, row, i) => {
+      return ops.concat(row.reduce((innerOps, tile, j) => innerOps.concat(fn(tile, {x: pt.x + j, y: pt.y + i})(map, library)), []))
+    }, [])
   }
 }
 
-function measureBlock (str, pt) {
-  console.log('measuring block', str)
-  return (ctx, map, library) => {
-    const input = library[str.slice(1)]
-    var size = {width: 0, height: 0}
-    for (var i = 0; i < input.length; i++) {
-      for (var j = 0; j < input[i].length; j++) {
-        const tile = input[i][j]
-        const itemSize = measure(tile, {x: pt.x + j, y: pt.y + i})(ctx, map, library)
-        size = combineMeasure(size, {width: j * map.tileSize + itemSize.width, height: i * map.tileSize + itemSize.height})
-      }
-    }
-    return size
-  }
-}
+const drawBlock = processBlock(draw)
+const measureBlock = processBlock(measure)
 
 const isText = (str) => {
-  return str[0] === '{' && str[str.length -1] === '}'
+  return str[0] === '{' && str[str.length - 1] === '}'
 }
 
 const isBlock = (str) => {
@@ -95,20 +85,19 @@ const measureItem = processItem([
   [isTile, measureTile]
 ])
 
-const combineDraw = (a, b) => {}
+const combineArray = (a, b) => a.concat(b)
 
-const processString = (fn, combine, init) => (str, pt) => {
+const processString = (fn, combine) => (str, pt) => {
   const items = str.split('+')
-  return (ctx, map, library) => {
+  return (map, library) => {
     return items.reduce((res, item) => {
-      console.log(fn(item, pt))
-      return combine(res, fn(item, pt)(ctx, map, library))
-    }, init)
+      return combineArray(res, fn(item, pt)(map, library))
+    }, [])
   }
 }
 
-const drawString = processString(drawItem, combineDraw, null)
-const measureString = processString(measureItem, combineMeasure, {width: 0, height: 0})
+const drawString = processString(drawItem)
+const measureString = processString(measureItem)
 
 export function draw (input, pt) {
   return drawString(input, pt)
