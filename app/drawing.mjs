@@ -77,7 +77,6 @@ const isTile = (str) => Number(str) + '' === str
 const processItem = (fns) => (str, pt) => {
   for (var i = 0; i < fns.length; i++) {
     if (fns[i][0](str, pt)) {
-      console.log('chose ', i, ' for ', str)
       return fns[i][1](str, pt)
     }
   }
@@ -112,11 +111,9 @@ const drawString = processString(drawItem, combineDraw, null)
 const measureString = processString(measureItem, combineMeasure, {width: 0, height: 0})
 
 export function draw (input, pt) {
-  console.log('drawing')
   return drawString(input, pt)
 }
 
 export function measure (input, pt) {
-  console.log('measuring!!')
   return measureString(input, pt)
 }
