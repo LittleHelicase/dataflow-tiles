@@ -10,7 +10,7 @@ function drawTile (n, pt) {
     return [
       {
         type: 'blit',
-        tileId: n,
+        tileId: Number(n),
         fn: (ctx) =>
           ctx.drawImage(map.tileMap, x * map.tileSize, y * map.tileSize, map.tileSize, map.tileSize,
             xCoord(pt, map), yCoord(pt, map), map.tileSize, map.tileSize)
