@@ -96,13 +96,10 @@ const processString = (fn, combine) => (str, pt) => {
   }
 }
 
-const drawString = processString(drawItem)
-const measureString = processString(measureItem)
-
-export function draw (input, pt) {
-  return drawString(input, pt)
+export function draw (str, pt) {
+  return processString(drawItem)(str, pt)
 }
 
-export function measure (input, pt) {
-  return measureString(input, pt)
+export function measure (str, pt) {
+  return processString(measureItem)(str, pt)
 }
