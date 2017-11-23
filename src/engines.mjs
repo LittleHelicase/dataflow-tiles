@@ -50,7 +50,7 @@ export const puppeteer = {
         const canvas = document.getElementsByTagName('canvas')[0]
         return {width: canvas.width, height: canvas.height}
       }, input, library)
-      await page.screenshot({path: 'output.png', clip: {x: 0, y: 0, width: size.width, height: size.height}})
+      return await page.screenshot({clip: {x: 0, y: 0, width: size.width, height: size.height}})
     }
   },
 

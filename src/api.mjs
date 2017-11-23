@@ -1,5 +1,6 @@
 
 import {puppeteer} from './engines'
+import {loadFromFile} from './library'
 
 const run = (fn) => fn()
 
@@ -13,7 +14,7 @@ const run = (fn) => fn()
  * generated image for the input.
  */
 export function generateImage (input, library) {
-  run(async () => {
+  return run(async () => {
     const engine = await puppeteer.initialize()
     const result = await engine.processInput(input, library || {})
     await engine.cleanUp()
@@ -32,5 +33,9 @@ export function generateImageFromAscii (input, library) {
       library[key] = preprocessString(library[key])
     }
   }
-  generateImage(inputArray, library || {})
+  return generateImage(inputArray, library || {})
+}
+
+export function loadLibrary (file) {
+  return loadFromFile(file)
 }

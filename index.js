@@ -1,5 +1,20 @@
 
 const api = require('./src/api_commonjs')
+const input = require('cli-ext').input
+const yargs = require('yargs')
+const fs = require('fs')
+
+const argv = yargs
+  .usage('Usage: $0 -i [file] -o [file]')
+  .option('i', {describe: 'An input file that encodes the tiling. If none is given you will be prompted in your EDITOR.', type: 'string'})
+  .option('o', {describe: 'The output png file. If none is given the file is written to stdout.', type: 'string'})
+  .option('l', {describe: 'Specify a block library that predefines tiled blocks for you.', type: 'string'})
+  .argv
+
+if (!argv.i && !argv.o) {
+  console.error('Invalid argument combination. It is currently not possible to use EDITOR input and write the result to stdout. Specify at least the `-i` or `-o` argument.')
+  process.exit(1)
+}
 
 /**
  * Composing tiles is done in an canvas element. For this I use
@@ -13,15 +28,18 @@ const api = require('./src/api_commonjs')
  *  3. [TODO] Send input
  *  4. Take screenshot.
  */
-api.generateImageFromAscii(
-`:poly-id 0 0 0 :poly-id
+Promise.all([
+  argv.l ? api.loadLibrary(argv.l) : Promise.resolve({}),
+  input(argv.i)
+])
+.then(([lib, str]) =>
+  api.generateImageFromAscii(str, lib)
+    .then((image) => {
+      var outStream = process.stdout
 
-
-0 136+110 134+122+21+174 122+123+21 122+123+21 135+122+175+21 137+111`,
-  {
-    'poly-id':
-      `48+{poly-id} 42 42 49
-      40 20+126+66 20+127+67 41
-      58 43+120+5+7 43+121+4+6 59`
-  }
+      if (argv.o) {
+        outStream = fs.createWriteStream(argv.o)
+      }
+      outStream.write(image)
+    })
 )
