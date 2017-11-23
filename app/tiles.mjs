@@ -20,6 +20,7 @@ const combineBounds = (sizeA, sizeB) => {
 }
 
 const backgroundTiles = [20, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
+const foregroundTiles = [210, 211]
 
 // put text in front of everything else and draw background tiles first.
 function sorting (a, b) {
@@ -27,6 +28,8 @@ function sorting (a, b) {
   if (b.type === 'text') return -1
   else if (a.type === 'blit' && backgroundTiles.includes(a.tileId)) return -1
   else if (b.type === 'blit' && backgroundTiles.includes(b.tileId)) return 1
+  else if (a.type === 'blit' && foregroundTiles.includes(a.tileId)) return 1
+  else if (b.type === 'blit' && foregroundTiles.includes(b.tileId)) return -1
   return 0
 }
 
