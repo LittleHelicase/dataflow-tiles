@@ -23,6 +23,7 @@
     "puppeteer": "^0.13.0",
     "serve-static": "^1.13.1",
     "stream-reduce": "^1.0.3",
+    "strip-comments": "^0.4.4",
     "yargs": "^10.0.3"
   }
 }

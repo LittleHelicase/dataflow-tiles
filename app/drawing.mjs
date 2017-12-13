@@ -31,7 +31,7 @@ function drawText (str, pt) {
         type: 'text',
         fn: (ctx) => {
           ctx.font = '24px Arial'
-          ctx.fillText(text, xCoord(pt, map) + map.tileSize * 0.25, yCoord(pt, map) + map.tileSize * 0.5)
+          ctx.fillText(text.replace(/\\w/g, ' '), xCoord(pt, map) + map.tileSize * 0.25, yCoord(pt, map) + map.tileSize * 0.5 + 5)
         }
       }
     ]

@@ -23,6 +23,7 @@ export function generateImage (input, library) {
 }
 
 const preprocessString = (str) => {
+  str = str.replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, '')
   return str.split('\n').map((line) => line.trim().split(' ').filter((cnt) => cnt !== ''))
 }
 
